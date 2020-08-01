@@ -1,0 +1,6 @@
+(executables
+ (names miniml))
+
+(install
+ (section bin)
+ (files (miniml.exe as miniml)))
