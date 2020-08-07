@@ -1,10 +1,6 @@
 type id = string
 
-type type_ =
-  | TyBool
-  | TyInt
-  | TyTuple of type_ list
-  | TyFn of type_ * type_
+type type_ = TyBool | TyInt | TyTuple of type_ list | TyFn of type_ * type_
 
 type pattern =
   | PWildcard
@@ -26,7 +22,7 @@ type term =
 
 let output_tuple outfn = function
   | [] -> "()"
-  | [t] -> "(" ^ outfn t ^ ",)"
+  | [ t ] -> "(" ^ outfn t ^ ",)"
   | ts -> "(" ^ String.concat ", " (List.map outfn ts) ^ ")"
 
 let rec output_type = function
@@ -45,15 +41,20 @@ let rec output_pattern = function
 let rec output_term = function
   | TApply (t1, t2) -> output_term t1 ^ " " ^ output_term t2
   | TLet (p, ty, t1, t2) ->
-    "let " ^ output_pattern p ^ ": " ^ output_type ty ^ " = " ^ output_term t1 ^ " in " ^ output_term t2
+      "let " ^ output_pattern p ^ ": " ^ output_type ty ^ " = " ^ output_term t1
+      ^ " in " ^ output_term t2
   | TCase (t, cases) ->
-    let output_case (pat, term) = output_pattern pat ^ " => " ^ output_term term in
-    "case " ^ output_term t ^ " of " ^ String.concat " | " (List.map output_case cases)
+      let output_case (pat, term) =
+        output_pattern pat ^ " => " ^ output_term term
+      in
+      "case " ^ output_term t ^ " of "
+      ^ String.concat " | " (List.map output_case cases)
   | TIf (t1, t2, t3) ->
-    "if " ^ output_term t1 ^ " then " ^ output_term t2 ^ " else " ^ output_term t3
+      "if " ^ output_term t1 ^ " then " ^ output_term t2 ^ " else "
+      ^ output_term t3
   | TId id -> id
   | TBool b -> string_of_bool b
   | TInt i -> string_of_int i
   | TFn (p, ty, t) ->
-    "fn " ^ output_pattern p ^ ": " ^ output_type ty ^ " => " ^ output_term t
+      "fn " ^ output_pattern p ^ ": " ^ output_type ty ^ " => " ^ output_term t
   | TTuple t -> output_tuple output_term t
