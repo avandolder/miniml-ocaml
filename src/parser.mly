@@ -12,6 +12,7 @@
 %token COMMA ","
 %token BAR "|"
 %token EQUAL "="
+%token DOT "."
 %token FAT_ARROW "=>"
 %token THIN_ARROW "->"
 %token EOF
@@ -32,8 +33,10 @@ term:
   | LET p=pattern ":" ty=ty "=" t1=term IN t2=term { TLet (p, ty, t1, t2) }
   | CASE t=term OF "|"? cs=cases                   { TCase (t, cs) }
   | IF t1=term THEN t2=term ELSE t3=term           { TIf (t1, t2, t3) }
-  | FN p=pattern ":" ty=ty "=>" t=term             { TFn (p, ty, t) }
+  | FN "(" p=pattern ":" argty=ty ")" ":" retty=ty "=>" t=term
+    { TFn (p, argty, retty, t) }
   | t=tuple(term)                                  { TTuple t }
+  | t=term "." idx=INT                             { TIndex (t, idx) }
   | t=appterm                                      { t }
 
 appterm:

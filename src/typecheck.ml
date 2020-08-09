@@ -47,14 +47,15 @@ let rec check_term env = function
         let ty2 = check_term env t2 in
         let ty3 = check_term env t3 in
         if ty2 = ty3 then ty2 else raise (TypecheckError "Type mismatch")
-  | TFn (p, ty, t) -> (
-      match ty with
-      | TyFn (inty, outty) ->
-          let env' = check_pattern env p inty in
-          let ty' = check_term env' t in
-          if outty == ty' then ty else raise (TypecheckError "Type mismatch")
-      | _ -> raise (TypecheckError "Type mismatch") )
+  | TFn (p, argty, retty, t) ->
+      let env' = check_pattern env p argty in
+      let ty = check_term env' t in
+      if retty == ty then TyFn (argty, retty) else raise (TypecheckError "Type mismatch")
   | TId id -> List.assoc id env
   | TBool _ -> TyBool
   | TInt _ -> TyInt
   | TTuple t -> TyTuple (List.map (check_term env) t)
+  | TIndex (t, idx) ->
+      match check_term env t with
+      | TyTuple ts -> List.nth ts idx
+      | _ -> raise (TypecheckError "Can't index non-tuple")

@@ -17,8 +17,9 @@ type term =
   | TId of id
   | TBool of bool
   | TInt of int
-  | TFn of pattern * type_ * term
+  | TFn of pattern * type_ * type_ * term
   | TTuple of term list
+  | TIndex of term * int
 
 let output_tuple outfn = function
   | [] -> "()"
@@ -55,6 +56,7 @@ let rec output_term = function
   | TId id -> id
   | TBool b -> string_of_bool b
   | TInt i -> string_of_int i
-  | TFn (p, ty, t) ->
-      "fn " ^ output_pattern p ^ ": " ^ output_type ty ^ " => " ^ output_term t
+  | TFn (p, argty, retty, t) ->
+      "fn (" ^ output_pattern p ^ ": " ^ output_type argty ^ "): " ^ output_type retty ^ " => " ^ output_term t
   | TTuple t -> output_tuple output_term t
+  | TIndex (t, idx) -> output_term t ^ "." ^ string_of_int idx

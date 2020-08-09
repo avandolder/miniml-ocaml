@@ -41,6 +41,7 @@ rule read =
   | ',' { COMMA }
   | '|' { BAR }
   | '=' { EQUAL }
+  | '.' { DOT }
   | "=>" { FAT_ARROW }
   | "->" { THIN_ARROW }
   | id { ID (Lexing.lexeme lexbuf) }

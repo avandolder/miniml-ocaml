@@ -26,11 +26,11 @@ let rec parse_and_print lexbuf =
   | None -> ()
 
 let sample =
-  "let not: (Bool -> Bool) = fn b: Bool -> Bool =>\n\
+  "let not: (Bool -> Bool) = fn (b: Bool): Bool =>\n\
   \  case b of\n\
   \  | true => false\n\
   \  | false => true in\n\
    let (zero, ten): (Int, Int) = (0, 10) in\n\
-   if not true then zero else 10"
+   if not true then zero else (false, 10).1"
 
 let () = parse_and_print (Lexing.from_string sample)
